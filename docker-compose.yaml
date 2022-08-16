@@ -1,0 +1,33 @@
+version: '3'
+services:
+  db:
+    container_name: mysql
+    image: mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_DATABASE=local_dev
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password
+    ports:
+      - '3306:3306'
+    networks:
+      - bridge-network
+  api:
+    container_name: go-api
+    build: .
+    depends_on:
+      - db
+    restart: on-failure
+    ports:
+      - '8080:8080'
+    networks:
+      - bridge-network
+    environment:
+      - DATABASE_USER=user
+      - DATABASE_PASSWORD=password
+      - DATABASE_NAME=local_dev
+      - DATABASE_HOST=mysql
+      - DATABASE_PORT=3306
+networks:
+  bridge-network:
